@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Recitation</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                // On the client-side, after the connection is established
+                const socket = io();
+
+                // Check if the socket ID is already stored in local storage
+                let socketId = localStorage.getItem("socketId");
+
+                // If the socket ID is not stored, save the new ID in local storage
+                if (!socketId) {
+                    socketId = socket.id;
+                    localStorage.setItem("socketId", socketId);
+                }
+
+                $(".raiseBtn").click(function () {
+                    socket.emit("raise-hand");
+                });
+
+                socket.on("hand-raised", (id) => {
+                    $(".log-message").append(
+                        `<p>Socket ID ${id} is present.</p>`
+                    );
+                });
+
+                socket.on("user-disconnect", (id) => {
+                    $(".log-message").append(
+                        `<p>Socket ID ${id} has left the meeting.</p>`
+                    );
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <button class="raiseBtn">Raise Hand</button>
+        <div class="log-message"></div>
+    </body>
+</html>
